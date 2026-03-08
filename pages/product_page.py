@@ -1,4 +1,4 @@
-# pages/product_page.py
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -13,9 +13,15 @@ class ProductPage:
     )
 
     BUY_BUTTON = (By.CSS_SELECTOR, ".buy-button")
-    CART_LINK = (By.CSS_SELECTOR, "a.btn-group__btn")
-    PROMO_INPUT = (By.CSS_SELECTOR, "input#promo-info-promocode")
-    PROMO_APPLY_BTN = (By.CSS_SELECTOR, ".purchase-info__btn-icon")
+    CART_LINK = (
+        By.CSS_SELECTOR, "a.btn-group__btn"
+    )
+    PROMO_INPUT = (
+        By.CSS_SELECTOR, "input#promo-info-promocode"
+    )
+    PROMO_APPLY_BTN = (
+        By.CSS_SELECTOR, ".purchase-info__btn-icon"
+    )
     CHECKOUT_BUTTON = (
         By.CSS_SELECTOR, "button.basket-promo-info__button"
     )
@@ -38,7 +44,7 @@ class ProductPage:
     def __init__(
         self, driver, waiter: WebDriverWait = None,
         product_id: str = ""
-    ):
+    ) -> None:
         self.driver = driver
         self.waiter = waiter or WebDriverWait(driver, 10)
         if product_id:
@@ -47,7 +53,7 @@ class ProductPage:
             )
 
     @allure.step("Открыть товар: {product_id}")
-    def open(self, product_id: str = ""):
+    def open(self, product_id: str = "") -> "ProductPage":
         if product_id:
             self.URL = self.URL_TEMPLATE.format(
                 product_id=product_id
@@ -56,7 +62,7 @@ class ProductPage:
         self._close_popups()
         return self
 
-    def _close_popups(self):
+    def _close_popups(self) -> None:
         try:
             self.waiter.until(
                 EC.element_to_be_clickable(
@@ -74,7 +80,7 @@ class ProductPage:
             pass
 
     @allure.step("Нажать 'Купить'")
-    def click_buy(self):
+    def click_buy(self) -> "ProductPage":
         buy_btn = self.waiter.until(
             EC.element_to_be_clickable(self.BUY_BUTTON)
         )
@@ -82,7 +88,7 @@ class ProductPage:
         return self
 
     @allure.step("Добавить в корзину")
-    def add_to_cart(self):
+    def add_to_cart(self) -> "ProductPage":
         cart_btn = self.waiter.until(
             EC.element_to_be_clickable(self.CART_LINK)
         )
@@ -90,9 +96,11 @@ class ProductPage:
         return self
 
     @allure.step("Дождаться корзины")
-    def wait_basket_loaded(self):
+    def wait_basket_loaded(self) -> "ProductPage":
         self.waiter.until(
-            EC.presence_of_element_located(self.CHECKOUT_BUTTON)
+            EC.presence_of_element_located(
+                self.CHECKOUT_BUTTON
+            )
         )
         return self
 
@@ -103,8 +111,10 @@ class ProductPage:
         ).get_attribute('value') or ""
 
     @allure.step("Применить промокод: {code}")
-    def apply_promo(self, code: str):
-        promo_input = self.driver.find_element(*self.PROMO_INPUT)
+    def apply_promo(self, code: str) -> "ProductPage":
+        promo_input = self.driver.find_element(
+            *self.PROMO_INPUT
+        )
         if not promo_input.get_attribute('value'):
             promo_input.send_keys(code)
             apply_btn = self.driver.find_element(
@@ -125,14 +135,18 @@ class ProductPage:
 
     @allure.step("Получить скидку на товары")
     def get_discount_products(self) -> int:
-        elems = self.driver.find_elements(*self.DISCOUNT_ELEMENTS)
+        elems = self.driver.find_elements(
+            *self.DISCOUNT_ELEMENTS
+        )
         return self.extract_price(
             elems[0].text
         ) if len(elems) > 0 else 0
 
     @allure.step("Получить скидку по промокоду")
     def get_discount_promo(self) -> int:
-        elems = self.driver.find_elements(*self.DISCOUNT_ELEMENTS)
+        elems = self.driver.find_elements(
+            *self.DISCOUNT_ELEMENTS
+        )
         return self.extract_price(
             elems[1].text
         ) if len(elems) > 1 else 0

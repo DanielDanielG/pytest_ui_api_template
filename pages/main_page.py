@@ -1,4 +1,4 @@
-# pages/main_page.py
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -30,17 +30,19 @@ class MainPage:
         ".cookies-massage__btn.mtsds-button--color--alternative"
     )
 
-    def __init__(self, driver, waiter: WebDriverWait = None):
+    def __init__(
+        self, driver, waiter: WebDriverWait = None
+    ) -> None:
         self.driver = driver
         self.waiter = waiter or WebDriverWait(driver, 10)
 
     @allure.step("Открыть главную страницу")
-    def open(self):
+    def open(self) -> "MainPage":
         self.driver.get(self.URL)
         return self
 
     @allure.step("Закрыть попапы")
-    def close_all_popups(self):
+    def close_all_popups(self) -> "MainPage":
         try:
             self.waiter.until(
                 EC.element_to_be_clickable(self.REGION_CLOSE)
@@ -56,7 +58,7 @@ class MainPage:
         return self
 
     @allure.step("Выполнить поиск: {query}")
-    def search(self, query: str):
+    def search(self, query: str) -> "MainPage":
         self.close_all_popups()
         self.waiter.until(
             EC.element_to_be_clickable(self.SEARCH_INPUT)
@@ -69,7 +71,7 @@ class MainPage:
         return self
 
     @allure.step("Очистить поле поиска")
-    def clear_search(self):
+    def clear_search(self) -> "MainPage":
         self.driver.find_element(*self.CLEAR_BUTTON).click()
         return self
 

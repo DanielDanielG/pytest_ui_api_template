@@ -1,4 +1,4 @@
-# pages/search_page.py
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -16,13 +16,15 @@ class SearchPage:
         By.CSS_SELECTOR, ".v2-search__product-card"
     )
     SORTING_BUTTON = (
-        By.XPATH, "//div[contains(@class, 'mtsds-dropdown__control-blende')]"
+        By.XPATH, "//div[contains(@class, "
+                  "'mtsds-dropdown__control-blende')]"
     )
     SORTING_EXPENSIVE = (
         By.XPATH,
         "//span[contains(@class, "
         "'mtsds-dropdown-select__list-item-label-name') "
-        "and contains(normalize-space(.), 'Сначала дорогие')]"
+        "and contains(normalize-space(.), "
+        "'Сначала дорогие')]"
     )
     PRICE_VALUE = (By.CSS_SELECTOR, ".price__value")
     CART_COUNTER = (
@@ -31,30 +33,31 @@ class SearchPage:
     )
     BUY_BUTTON_XPATH = (
         """.//button[contains(., 'Купить') or """
-        """contains(., 'В корзину') or contains(., 'Предзаказ') """
-        """or contains(., 'Добавить')]"""
+        """contains(., 'В корзину') or contains(., """
+        """'Предзаказ') or contains(., 'Добавить')]"""
     )
 
     SEARCH_QUERY: str = "iphone"
     EXPECTED_COUNTER: str = "1"
 
     def __init__(
-        self, driver, waiter: WebDriverWait = None, query: str = ""
-    ):
+        self, driver, waiter: WebDriverWait = None,
+        query: str = ""
+    ) -> None:
         self.driver = driver
         self.waiter = waiter or WebDriverWait(driver, 10)
         if query:
             self.URL = self.URL_TEMPLATE.format(query=query)
 
     @allure.step("Открыть поиск: {query}")
-    def open(self, query: str = ""):
+    def open(self, query: str = "") -> "SearchPage":
         if query:
             self.URL = self.URL_TEMPLATE.format(query=query)
         self.driver.get(self.URL)
         self._close_popups()
         return self
 
-    def _close_popups(self):
+    def _close_popups(self) -> None:
         try:
             self.waiter.until(
                 EC.element_to_be_clickable(
@@ -72,9 +75,11 @@ class SearchPage:
             pass
 
     @allure.step("Дождаться загрузки товаров")
-    def wait_products_loaded(self):
+    def wait_products_loaded(self) -> "SearchPage":
         self.waiter.until(
-            EC.presence_of_all_elements_located(self.PRODUCT_CARD)
+            EC.presence_of_all_elements_located(
+                self.PRODUCT_CARD
+            )
         )
         return self
 
@@ -87,22 +92,21 @@ class SearchPage:
         return len(self.get_product_cards())
 
     @allure.step("Сортировать: Сначала дорогие")
-    def sort_by_expensive(self):
-        # Ждём кнопку сортировки и кликаем
+    def sort_by_expensive(self) -> "SearchPage":
         sorting_btn = self.waiter.until(
             EC.element_to_be_clickable(self.SORTING_BUTTON)
         )
         sorting_btn.click()
 
-        # Ждём опцию и кликаем
         option = self.waiter.until(
             EC.element_to_be_clickable(self.SORTING_EXPENSIVE)
         )
         option.click()
 
-        # Ждём обновления списка товаров
         self.waiter.until(
-            EC.presence_of_all_elements_located(self.PRODUCT_CARD)
+            EC.presence_of_all_elements_located(
+                self.PRODUCT_CARD
+            )
         )
         return self
 
@@ -133,7 +137,7 @@ class SearchPage:
         return "display: none" in style if style else True
 
     @allure.step("Добавить товар в корзину")
-    def add_first_product_to_cart(self):
+    def add_first_product_to_cart(self) -> "SearchPage":
         cards = self.get_product_cards()
         if not cards:
             raise Exception("Нет товаров")
@@ -145,8 +149,10 @@ class SearchPage:
         buy_btn.click()
         return self
 
-    @allure.step("Дождаться обновления счётчика: {expected_value}")
-    def wait_cart_counter_updated(self, expected_value: str = "1"):
+    @allure.step("Дождаться обновления счётчика")
+    def wait_cart_counter_updated(
+        self, expected_value: str = "1"
+    ) -> "SearchPage":
         counter = self.get_cart_counter()
         self.waiter.until(EC.visibility_of(counter))
         assert counter.text.strip() == expected_value

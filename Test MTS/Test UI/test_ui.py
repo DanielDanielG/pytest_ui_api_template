@@ -1,9 +1,10 @@
-# TestMTS/test_ui.py
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 import allure
+import pytest
 
 
 @allure.step("Извлечь цену: {text}")
@@ -15,18 +16,21 @@ def extract_price(text: str) -> int:
 
 
 @allure.feature("Поиск")
+@pytest.mark.ui
 class TestSearch:
 
     @allure.story("Очистка поиска")
     @allure.title("Проверка очистки поля")
-    def test_search_clear(self, driver):
+    def test_search_clear(self, driver) -> None:
         """Проверка ввода и очистки поля поиска"""
         waiter = WebDriverWait(driver, 10)
         from pages.main_page import MainPage
         page = MainPage(driver, waiter)
 
         with allure.step("Открыть и ввести запрос"):
-            page.open().close_all_popups().search("Samsung Galaxy")
+            page.open().close_all_popups().search(
+                "Samsung Galaxy"
+            )
             assert page.get_search_value() == "Samsung Galaxy"
 
         with allure.step("Очистить поле"):
@@ -35,9 +39,8 @@ class TestSearch:
 
     @allure.story("Раскладка клавиатуры")
     @allure.title("Поиск с коррекцией раскладки")
-    def test_search_keyboard_layout(self, driver):
-        """Проверка поиска с учетом раскладки клавиатуры (
-        ввод "шзрщту" → результаты "iPhone")"""
+    def test_search_keyboard_layout(self, driver) -> None:
+        """Проверка поиска с учетом раскладки клавиатуры"""
         waiter = WebDriverWait(driver, 10)
         from pages.main_page import MainPage
         main = MainPage(driver, waiter)
@@ -49,7 +52,7 @@ class TestSearch:
 
     @allure.story("Сортировка")
     @allure.title("Проверка сортировки по убыванию")
-    def test_search_sorting_descending(self, driver):
+    def test_search_sorting_descending(self, driver) -> None:
         """Проверка сортировки товаров: Сначала дорогие"""
         waiter = WebDriverWait(driver, 10)
         from pages.search_page import SearchPage
@@ -98,13 +101,13 @@ class TestSearch:
 
         with allure.step("Выбрать 'Сначала дорогие'"):
             dev = waiter.until(
-                EC.element_to_be_clickable(page.SORTING_EXPENSIVE)
+                EC.element_to_be_clickable(
+                    page.SORTING_EXPENSIVE
+                )
             )
             dev.click()
 
-        with allure.step(
-            "Дождаться исчезновения спиннера загрузки"
-        ):
+        with allure.step("Дождаться исчезновения спиннера"):
             try:
                 WebDriverWait(driver, 15).until(
                     EC.invisibility_of_element_located((
@@ -125,7 +128,9 @@ class TestSearch:
             )
 
         with allure.step("Найти все карточки товаров"):
-            product_cards = driver.find_elements(*page.PRODUCT_CARD)
+            product_cards = driver.find_elements(
+                *page.PRODUCT_CARD
+            )
 
         with allure.step("Извлечь все цены"):
             prices = []
@@ -139,7 +144,9 @@ class TestSearch:
                         char for char in price_text
                         if char.isdigit()
                     )
-                    price = int(price_clean) if price_clean else None
+                    price = (
+                        int(price_clean) if price_clean else None
+                    )
                     if price is not None:
                         prices.append(price)
                 except Exception:
@@ -154,11 +161,12 @@ class TestSearch:
 
 
 @allure.feature("Корзина")
+@pytest.mark.ui
 class TestCart:
 
     @allure.story("Счётчик корзины")
     @allure.title("Проверка обновления счётчика")
-    def test_cart_counter_update(self, driver):
+    def test_cart_counter_update(self, driver) -> None:
         """Проверка обновления счётчика корзины"""
         waiter = WebDriverWait(driver, 10)
         from pages.search_page import SearchPage
@@ -200,7 +208,9 @@ class TestCart:
 
         with allure.step("Счётчик корзины скрыт"):
             counter = driver.find_element(*page.CART_COUNTER)
-            assert "display: none" in counter.get_attribute("style")
+            assert "display: none" in counter.get_attribute(
+                "style"
+            )
 
         with allure.step("Найти первую карточку"):
             product_card = driver.find_element(*page.PRODUCT_CARD)
@@ -222,11 +232,14 @@ class TestCart:
 
 
 @allure.feature("Промокоды")
+@pytest.mark.ui
 class TestPromo:
 
     @allure.story("Применение промокода")
     @allure.title("Проверка промокода и расчёта скидки")
-    def test_promo_and_discount_calculation(self, driver):
+    def test_promo_and_discount_calculation(
+        self, driver
+    ) -> None:
         """Проверка промокода и расчёта скидки"""
         waiter = WebDriverWait(driver, 10)
         from pages.product_page import ProductPage
@@ -314,7 +327,8 @@ class TestPromo:
             price_total = page.get_price_total()
 
             expected_total = (
-                price_original - discount_products - discount_promo
+                price_original - discount_products -
+                discount_promo
             )
             assert price_total == expected_total, (
                 f"Ошибка: {price_original} - {discount_products} - "

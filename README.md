@@ -11,9 +11,10 @@
 5. Открыть отчет 'allure open allure-report'
 
 Альтарнативный вариант автоматический запуск тестов UI (pytest+allure)
-1. Открыть папку Test MTS
-2. Открыть AUTO_UI_PY+AL.bat
-3. Ожидать проведения тестов и получения отчета
+Через BAT-файлы (Windows)
+Все тесты: Test MTS\AUTO_API+UI_PY+AL.bat
+UI тесты: Test MTS\Test UI\AUTO_UI_PY+AL.bat
+API тесты: Test MTS\Test API\AUTO_API_PY+AL.bat
 
 ### Стек:
 - pytest
@@ -24,14 +25,19 @@
 - config
 
 ### Струткура:
-- ./test - тесты
-- ./pages - описание страниц
-- ./api - хелперы для работы с API
-- ./db - хелперы для работы с БД
+├── API/             # API клиенты
+├── pages/           # Page Objects
+├── Test MTS/
+│   ├── Test UI/     # UI тесты
+│   └── Test API/    # API тесты
+├── conftest.py      # Фикстуры
+├── requirements.txt # Зависимости
+└── README.md        # Документация
 
 ### Полезные ссылки
 - [Подсказка по markdown](https://www.markdownguide.org/basic-syntax/)
 - [Генератор файла .gitignore](https://www.toptal.com/developers/gitignore)
+- [Тест-план проекта Интернет-магазин МТС](https://dantestit.yonote.ru/share/3909c880-72b5-49ff-ab7c-01d1becf9107#h-testovaya-dokumentaciya
 
 ### Библиотеки (!)
 - pyp install pytest

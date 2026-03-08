@@ -1,7 +1,6 @@
-# pages/basket_page.py
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 import allure
 
 
@@ -14,12 +13,14 @@ class BasketPage:
         ".cart-button .mdsx-counter-button__quantity"
     )
 
-    def __init__(self, driver, waiter: WebDriverWait = None):
+    def __init__(
+        self, driver, waiter: WebDriverWait = None
+    ) -> None:
         self.driver = driver
         self.waiter = waiter or WebDriverWait(driver, 10)
 
     @allure.step("Открыть корзину")
-    def open(self):
+    def open(self) -> "BasketPage":
         self.driver.get(self.URL)
         return self
 
