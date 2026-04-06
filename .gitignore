@@ -3,10 +3,11 @@
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
-__pycache__/
+__pycache__
 *.py[cod]
 *$py.class
 test.py
+.vscode
 # C extensions
 *.so
 
